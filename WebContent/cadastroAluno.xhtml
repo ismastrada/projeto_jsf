@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+<ui:define name="titulo">Cadastro de Aluno</ui:define>
+	
+	<ui:define name="conteudo">
+			
+		<h:form>
+			<h1>Cadastro de Aluno</h1>
+			<p:messages styleClass="unstyled label label-success" closable="true"></p:messages>
+			<h:outputLabel value="Nome do Aluno: "></h:outputLabel>
+			<h:inputText id="nome" name="nome" required="true"
+				value="#{alunoMB.aluno.nome}" requiredMessage="Campo nome é obrigatório"></h:inputText>
+			
+			<br />
+						
+			<h:outputLabel value="Idade: "></h:outputLabel>
+			<h:inputText id="idade" name="idade" required="true"
+			value="#{alunoMB.aluno.idade}" requiredMessage="Campo idade é obrigatório" styleClass="span1" label="Idade"></h:inputText>
+			
+			<br />
+			
+			<h:outputLabel value="Sexo: "></h:outputLabel>			
+			<h:selectOneMenu value="#{alunoMB.aluno.sexo}" styleClass="span2" required="true" requiredMessage="Selecione o sexo">
+				<f:selectItem itemValue="0" itemLabel="Selecione o sexo"></f:selectItem>
+				<f:selectItem itemLabel="Feminino" itemValue="Feminino"></f:selectItem>
+				<f:selectItem itemLabel="Masculino" itemValue="Masculino"></f:selectItem>
+			</h:selectOneMenu>			
+			<br />
+						
+			<h:selectOneMenu value="#{alunoMB.uf}" converter="ufConverter" styleClass="span1">
+				<f:selectItem itemValue="0" itemLabel="Selecione a UF"></f:selectItem>
+				<f:selectItems id="uf" value="#{ufMB.getListaUf()}" var="uf" itemLabel ="#{uf.sigla}" itemValue="#{uf}">
+				</f:selectItems>
+				
+				<f:ajax event="change" render="comboCidade"></f:ajax>
+			</h:selectOneMenu>
+			<br />
+			<h:selectOneMenu id="comboCidade" value="#{alunoMB.aluno.cidade}" converter="cidadeConverter">
+				<f:selectItems value="#{alunoMB.getCidadesPorUfSelecionada()}" var="cidade" itemLabel="#{cidade.nome}" itemValue="#{cidade}">
+				</f:selectItems>
+			</h:selectOneMenu>
+			<br />
+			
+			
+			<h:commandButton id="salvar" value="Salvar" action="#{alunoMB.salvar()}" styleClass="btn"></h:commandButton>
+			<h:commandButton value="Novo" action="#{alunoMB.novo()}" immediate="true" styleClass="btn">
+				<f:ajax render="@form"></f:ajax>
+			</h:commandButton>
+			<br />
+		</h:form>
+				
+		<h:form prependId="false">
+
+		    <p:dataTable id="dataTable" var="aluno" value="#{alunoMB.getListaAluno()}"
+		                 paginator="true" rows="10"
+		                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+		                 rowsPerPageTemplate="5,10,15" 
+		                 styleClass="table table-hover">
+		        <f:facet name="header">
+		            Alunos cadastrados
+		        </f:facet>
+		
+		        <p:column id="nomeHeader" sortBy="#{aluno.nome}"
+			        filterBy="#{aluno.nome}"  
+	                headerText="Nome do aluno" filterMatchMode="contains">
+		            <f:facet name="header">
+		                <h:outputText value="Nome do Aluno" />
+		            </f:facet>
+		            <h:outputText value="#{aluno.nome}" />
+		        </p:column>
+		
+				<p:column id="idadeHeader" sortBy="#{aluno.idade}"
+		        	filterBy="#{aluno.idade}"
+	                headerText="Idade" filterMatchMode="contains">
+		            <h:outputText value="#{aluno.idade}" />
+		        </p:column>
+		        
+		        <p:column id="sexoHeader" sortBy="#{aluno.sexo}"
+			        filterBy="#{aluno.sexo}"  
+	                headerText="Sexo" filterMatchMode="contains">
+		            <h:outputText value="#{aluno.sexo}" />
+		        </p:column>
+		
+				<p:column id="ufHeader" sortBy="#{aluno.cidade.uf.sigla}"
+			        filterBy="#{aluno.cidade.uf.sigla}"  
+	                headerText="Uf" filterMatchMode="contains">
+		            <h:outputText value="#{aluno.cidade.uf.sigla}" />
+		        </p:column>
+			
+		        <p:column id="cidadeHeader" sortBy="#{aluno.cidade.nome}"
+			        filterBy="#{aluno.cidade.nome}"
+	                headerText="Cidade" filterMatchMode="contains">
+		            <h:outputText value="#{aluno.cidade.nome}" />
+		        </p:column>
+		
+		        <p:column>
+		            <f:facet name="header">
+		                <h:outputText value="Opcoes" />
+		            </f:facet>
+		            <h:commandLink value="Editar" action="#{alunoMB.editar(aluno)}" styleClass="btn btn-info"></h:commandLink>
+					<h:commandLink id="remover" value="Remover" action="#{alunoMB.remover(aluno)}" styleClass="btn btn-danger"></h:commandLink>
+		        </p:column>
+		
+		    </p:dataTable>
+	    </h:form>
+		
+	</ui:define>
+	
+</ui:composition>
